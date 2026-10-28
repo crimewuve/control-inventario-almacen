@@ -1,0 +1,126 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Gestion de órdenes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-card>
+  <ion-card-header>
+    <ion-card-title>Panel de órdenes</ion-card-title>
+    <ion-card-subtitle>Resumen de los resultados</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <h2>Órdenes</h2>
+          <h1>{{ obtenerTotalOrdenes() }}</h1>
+        </ion-col>
+
+        <ion-col size="6">
+          <h2>Stock crítico</h2>
+          <h1>{{ obtenerStockCritico() }}</h1>
+        </ion-col>
+
+        <ion-col size="12">
+          <h2>Valor total</h2>
+          <h1>
+            {{ obtenerValorTotal() | currency:'COP':'symbol':'1.0-0' }}
+          </h1>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>
+
+  <!-- apartado de Filtros-->
+  <ion-card>
+    <ion-card-header>
+     <ion-card-title>Filtros de órdenes</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <ion-searchbar
+        placeholder="Buscar por título o descripción"
+        [(ngModel)]="textoBusqueda"
+        (ionInput)="aplicarFiltros()">
+      </ion-searchbar>
+
+      <ion-item>
+        <ion-input
+          label="Precio mínimo"
+         labelPlacement="stacked"
+          type="number"
+          [(ngModel)]="precioMinimo"
+          (ionInput)="aplicarFiltros()">
+        </ion-input>
+      </ion-item>
+
+     <ion-item>
+        <ion-input
+          label="Precio máximo"
+          labelPlacement="stacked"
+          type="number"
+          [(ngModel)]="precioMaximo"
+          (ionInput)="aplicarFiltros()">
+        </ion-input>
+     </ion-item>
+
+     <ion-button
+        expand="block"
+        fill="outline"
+        (click)="limpiarFiltros()">
+        Limpiar filtros
+      </ion-button>
+
+    </ion-card-content>
+  </ion-card>
+
+  <div *ngIf="cargando" class="ion-text-center">
+    <ion-spinner></ion-spinner>
+    <p>Cargando órdenes...</p>
+  </div>
+
+  <ion-text color="danger" *ngIf="error">
+    <p>{{ error }}</p>
+  </ion-text>
+
+
+  <!-- apartado de Productos-->
+  <ion-list *ngIf="!cargando && !error">
+
+    <ion-item *ngFor="let orden of ordenesFiltradas">
+
+      <ion-avatar slot="start">
+        <img
+          src="https://ionicframework.com/docs/img/demos/avatar.svg"
+          alt="Producto"
+        />
+      </ion-avatar>
+
+      <ion-label>
+        <h2>Orden #{{ orden.id }}</h2>
+        <h3>{{ orden.title }}</h3>
+
+        <p>Precio: {{ orden.precio | currency:'COP':'symbol':'1.0-0' }}</p>
+
+        <p>Cantidad: {{ orden.cantidad }}</p>
+
+        <p>Stock: {{ orden.stock }}</p>
+      </ion-label>
+
+      <ion-badge slot="end" [color]="orden.stock < 5 ? 'danger' : 'success'">
+
+        {{ orden.stock < 5 ? 'Crítico' : 'Disponible' }}
+
+      </ion-badge>
+
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>
